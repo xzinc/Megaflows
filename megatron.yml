@@ -1,0 +1,47 @@
+name: Megatron Workflow
+
+on:
+    push:
+    workflow_dispatch:
+    
+env:
+  GitHubMail: "Michael.j.hubs@gmail.com"
+  GitHubName: "CipherX1-ops" 
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+       - name: Checkout
+         uses: actions/checkout@main
+
+       - name: initialization
+         continue-on-error: true
+         run: |
+           git config --global user.email ${GitHubMail}
+           git config --global user.name ${GitHubName}
+           git config --global credential.helper store
+           echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
+       - name: cloning repo
+         continue-on-error: true
+         run: |
+           git clone https://${GitHubName}:${{ secrets.GH_TOKEN }}@${{ secrets.CREDS }} megatron
+       - name: Running Megatron
+         timeout-minutes: 350
+         continue-on-error: true
+         run: |
+           cd megatron
+           wget https://raw.githubusercontent.com/CipherX1-ops/Megatron/main/Dockerfile
+           echo "CMD bash resources/startup/startup.sh" >> Dockerfile
+           docker build . --rm --force-rm --compress --no-cache=true --pull --file Dockerfile -t megatron
+           docker run --privileged --env-file .env --rm -i megatron
+       - name: Loop workflow
+         continue-on-error: true
+         run: |
+              git clone https://github.com/${GITHUB_REPOSITORY} loop
+              cd loop || exit 1
+              echo $(date -u +%T%P) >> loop.txt
+              git add loop.txt
+              git commit -m "Workflow : Loop $(date -u +%D-%T%P)"
+              git push -f -q https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} HEAD:main
