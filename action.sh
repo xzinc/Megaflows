@@ -1,6 +1,6 @@
 branch=main
-git clone -b $branch https://github.com/CipherX1-ops/Megatron /root/CipherX1-ops
-cp megatron/.env /root/CipherX1-ops/.env
-cd /root/CipherX1-ops
+git clone -b $branch https://github.com/ToxygenX/Megatron /root/ToxygenX
+cp megatron/.env /root/ToxygenX/.env
+cd /root/ToxygenX
 docker build . --rm --force-rm --compress --pull --file Dockerfile -t megatron
 docker run --privileged --env-file .env --rm -i megatron
