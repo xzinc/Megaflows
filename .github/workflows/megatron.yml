@@ -6,7 +6,7 @@ on:
 
 env:
   GitHubMail: "Michael.j.hubs@gmail.com"
-  GitHubName: "CipherX1-ops" 
+  GitHubName: "ToxygenX" 
 
 jobs:
   build:
